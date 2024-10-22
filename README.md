@@ -1,146 +1,111 @@
-# Quiz Application API
+# Splitwise
 
-## Overview
-This is a RESTful API for a Quiz Application built using Node.js and Express.js. The application allows users to create quizzes, take quizzes, manage user authentication, and verify email addresses using OTP (One Time Password).
+A simple expense sharing application built with Node.js, Express, and MongoDB, inspired by the popular Splitwise platform. This application allows users to manage their expenses, share them with friends, and keep track of amounts owed.
 
 ## Features
-- User Registration and Login
-- Password Hashing
-- Email Verification with OTP
-- Create, Retrieve, Update, and Delete Quizzes
-- Submit Quiz Answers and Receive Scores
-- JWT-based Authentication
 
-## Technologies Used
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT (JSON Web Tokens)
-- Bcrypt.js
-- Nodemailer
-- OTP Generator
+- User authentication (registration and login)
+- Create, read, update, and delete expenses
+- Share expenses with friends
+- Calculate amounts owed based on sharing methods (equal, exact, percentage)
+- Validation for all user inputs
+- Token-based authentication for secure API access
 
-## Getting Started
+## Tech Stack
+
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB with Mongoose
+- **Validation:** express-validator
+- **Authentication:** JWT (JSON Web Tokens)
+
+## Installation
 
 ### Prerequisites
-- Node.js (v14 or later)
-- MongoDB (v4.0 or later)
-- A Gmail account for sending emails (or configure with your email service)
 
-### Installation
+- Node.js (v14 or higher)
+- MongoDB (or a MongoDB Atlas account)
+
+### Steps
+
 1. Clone the repository:
-   git clone <repository_url>
-   cd <repository_name>
+
+   git clone https://github.com/Amit3817/Splitwise.git
+   cd Splitwise
+
 
 2. Install the dependencies:
-npm install
 
-3. Set up environment variables in a .env file:
-PORT=3000
-MONGODB_URI=
-AUTH_EMAIL=
-AUTH_PASS=
-SECRET_KEY=your_jwt_secret_key
+   npm install
 
-4. Running the Application
-To start the application, run:
+3. Set up environment variables:
 
-npm start
-The server will start on the port specified in your environment variables (default is 3000).
+   Create a `.env` file in the root directory and add your MongoDB connection string and any other environment variables:
 
-#### API Endpoints
-1. User Authentication
-Sign Up
+   PORT=5000
+   DB_URL=
+   JWT_SECRET=your_jwt_secret
+   AUTH_EMAIL
+   AUTH_PASS
 
-POST /api/auth/signup
-Body:
-json
-Copy code
+4. Start the server:
+
+   npm start
+
+5. The server should be running at `http://localhost:5000`.
+
+## API Endpoints
+
+### Authentication
+
+**POST** /api/users/signup - Register a new user
+**POST** /api/users/login - Log in an existing user
+**POST** /api/users/forgot-password - Request a password reset
+**POST** /api/users/verify-otp - Verify the OTP for password reset
+**PUT** /api/users/resend-otp - Resend the OTP for verification
+**PUT** /api/users/change-password - Change the user's password
+
+### Expenses
+
+- **GET** `/api/expenses` - Get all expenses
+- **POST** `/api/expenses` - Create a new expense
+- **GET** `/api/expenses/:id` - Get details of an expense
+- **PUT** `/api/expenses/:id` - Update an existing expense
+- **DELETE** `/api/expenses/:id` - Delete an expense
+
+### Example Request Body for Creating an Expense
+
 {
-  "email": "user@example.com",
-  "password": "YourPassword123!",
-  "name": "Your Name",
-  "type": "user"
-}
-Log In
-
-POST /api/auth/login
-Body:
-json
-Copy code
-{
-  "email": "user@example.com",
-  "password": "YourPassword123!"
-}
-Forgot Password
-
-POST /api/auth/forgot-password
-Body:
-json
-Copy code
-{
-  "email": "user@example.com"
-}
-Verify OTP
-
-POST /api/auth/otp-verify
-Body:
-json
-Copy code
-{
-  "otp": "1234"
-}
-Change Password
-
-PATCH /api/auth/change-password
-Body:
-json
-Copy code
-{
-  "newpassword": "YourNewPassword123!"
-}
-
-2. Quiz Management
-Create Quiz
-
-POST /api/quizzes
-Body:
-json
-Copy code
-{
-  "title": "Quiz Title",
-  "questions": [
+  "amount": 100,
+  "sharedWith": [
     {
-      "question": "Question text?",
-      "options": [
-        {
-          "text": "Option A",
-          "correct": true
-        },
-        {
-          "text": "Option B",
-          "correct": false
-        }
-      ]
+      "userId": "60d5ec49f0c2e75f8c0a5c42",
+      "amountOwed": 50,
+      "percentage": 50
     }
-  ]
+  ],
+  "method": "percentage",
+  "createdBy": "60d5ec49f0c2e75f8c0a5c42"
 }
-Get All Quizzes
 
-GET /api/quizzes
-Get Quiz Details
+## Testing
 
-GET /api/quizzes/:id
-Submit Quiz
+You can use Postman or any other API testing tool to test the API endpoints. Make sure to include the JWT token in the headers for protected routes.
 
-POST /api/quizzes/:id/submit
-Body:
-json
-Copy code
-{
-  "answers": ["Option A", "Option B"]
-}
-Delete Quiz
+## Contributing
 
-DELETE /api/quizzes/:id
+Contributions are welcome! Please follow these steps to contribute:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/YourFeature`)
+3. Make your changes and commit them (`git commit -m 'Add some feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
+
+
+## Acknowledgements
+
+- [Node.js](https://nodejs.org)
+- [Express](https://expressjs.com)
+- [MongoDB](https://www.mongodb.com)
+- [Mongoose](https://mongoosejs.com)
+- [JWT](https://jwt.io)
