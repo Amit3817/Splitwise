@@ -1,7 +1,7 @@
 const Expense = require("../model/expense.js");
 const User = require("../model/user.js");
 const mongoose = require("mongoose");
-const { Parser } = require('json2csv');
+const { Parser } = require("json2csv");
 
 const createExpense = async (req, res) => {
   try {
@@ -50,11 +50,9 @@ const createExpense = async (req, res) => {
         0
       );
       if (totalOwed !== amount) {
-        return res
-          .status(400)
-          .json({
-            message: "Total amounts owed must equal the total expense amount.",
-          });
+        return res.status(400).json({
+          message: "Total amounts owed must equal the total expense amount.",
+        });
       }
     } else {
       return res.status(400).json({ message: "Invalid split method." });
@@ -99,12 +97,10 @@ const createExpense = async (req, res) => {
     res.status(201).json(newExpense);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: "An error occurred while adding the expense.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "An error occurred while adding the expense.",
+      error: error.message,
+    });
   }
 };
 
@@ -205,11 +201,9 @@ const editExpense = async (req, res, next) => {
         totalOwed += friend.amountOwed;
       });
       if (totalOwed !== amount) {
-        return res
-          .status(400)
-          .json({
-            message: "Total amounts owed must equal the total expense amount.",
-          });
+        return res.status(400).json({
+          message: "Total amounts owed must equal the total expense amount.",
+        });
       }
     } else if (method === "percentage") {
       sharedWith.forEach((friend) => {
@@ -257,32 +251,33 @@ const deleteExpense = async (req, res, next) => {
   }
 };
 
-
 const downloadBalanceSheet = async (req, res) => {
   try {
     const userId = req.user.id;
 
     const expenses = await Expense.find({
-      $or: [
-        { createdBy: userId },
-        { 'sharedWith.userId': userId }
-      ]
+      $or: [{ createdBy: userId }, { "sharedWith.userId": userId }],
     });
 
     if (!expenses || expenses.length === 0) {
-      return res.status(404).json({ message: 'No expenses found for the user.' });
+      return res
+        .status(404)
+        .json({ message: "No expenses found for the user." });
     }
 
-    let totalSpent = 0;  
-    let totalOwed = 0;   
+    let totalSpent = 0;
+    let totalOwed = 0;
 
-    const balanceSheet = expenses.map(expense => {
-
+    const balanceSheet = expenses.map((expense) => {
       if (expense.createdBy.toString() === userId.toString()) {
         totalSpent += expense.amount;
       }
 
-      const sharedInfo = expense.sharedWith.find(user => user.userId.toString() === userId.toString()&&user.userId.toString()!==userId.toString());
+      const sharedInfo = expense.sharedWith.find(
+        (user) =>
+          user.userId.toString() === userId.toString() &&
+          user.userId.toString() !== userId.toString()
+      );
 
       if (sharedInfo) {
         totalOwed += sharedInfo.amountOwed;
@@ -294,7 +289,10 @@ const downloadBalanceSheet = async (req, res) => {
         createdAt: expense.createdAt,
         createdBy: expense.createdBy.toString(),
         totalOwed: sharedInfo ? sharedInfo.amountOwed : 0,
-        totalSpent: expense.createdBy.toString() === userId.toString() ? expense.amount : 0,
+        totalSpent:
+          expense.createdBy.toString() === userId.toString()
+            ? expense.amount
+            : 0,
       };
     });
 
@@ -302,29 +300,35 @@ const downloadBalanceSheet = async (req, res) => {
       userId,
       totalSpent,
       totalOwed,
-      netBalance: totalSpent - totalOwed, 
+      netBalance: totalSpent - totalOwed,
     };
 
-    const fields = ['expenseId', 'amount', 'method', 'createdAt', 'totalSpent', 'totalOwed'];
+    const fields = [
+      "expenseId",
+      "amount",
+      "method",
+      "createdAt",
+      "totalSpent",
+      "totalOwed",
+    ];
     const opts = { fields };
     const parser = new Parser(opts);
     const csv = parser.parse(balanceSheet);
 
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=balance_sheet.csv');
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=balance_sheet.csv"
+    );
 
     res.status(200).send(csv);
   } catch (error) {
     res.status(500).json({
-      message: 'Failed to download the balance sheet',
+      message: "Failed to download the balance sheet",
       error: error.message,
     });
   }
 };
-
-
-
 
 module.exports = {
   createExpense,
@@ -332,5 +336,5 @@ module.exports = {
   getexpenseDetails,
   editExpense,
   deleteExpense,
-  downloadBalanceSheet
+  downloadBalanceSheet,
 };

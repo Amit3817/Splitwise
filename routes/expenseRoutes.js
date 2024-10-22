@@ -6,7 +6,7 @@ const {
   getexpenseDetails,
   editExpense,
   deleteExpense,
-  downloadBalanceSheet
+  downloadBalanceSheet,
 } = require("../controller/expenseController");
 
 const verifytoken = require("../middleware/isauth.js");
@@ -95,6 +95,6 @@ router.put(
 
 router.delete("/:id", deleteExpense);
 
-router.get('/balance-sheet/download', downloadBalanceSheet);
+router.get("/balance-sheet/download", downloadBalanceSheet);
 
 module.exports = router;
