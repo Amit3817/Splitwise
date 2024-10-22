@@ -1,7 +1,6 @@
 const Expense = require("../model/expense.js");
 const User = require("../model/user.js");
 const mongoose = require("mongoose");
-const { unsubscribe } = require("../routes/expenseRoutes.js");
 
 const createExpense = async (req, res) => {
   try {
