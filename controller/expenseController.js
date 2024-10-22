@@ -1,6 +1,7 @@
 const Expense = require("../model/expense.js");
 const User = require("../model/user.js");
 const mongoose = require("mongoose");
+const { Parser } = require('json2csv');
 
 const createExpense = async (req, res) => {
   try {
@@ -256,10 +257,80 @@ const deleteExpense = async (req, res, next) => {
   }
 };
 
+
+const downloadBalanceSheet = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const expenses = await Expense.find({
+      $or: [
+        { createdBy: userId },
+        { 'sharedWith.userId': userId }
+      ]
+    });
+
+    if (!expenses || expenses.length === 0) {
+      return res.status(404).json({ message: 'No expenses found for the user.' });
+    }
+
+    let totalSpent = 0;  
+    let totalOwed = 0;   
+
+    const balanceSheet = expenses.map(expense => {
+
+      if (expense.createdBy.toString() === userId.toString()) {
+        totalSpent += expense.amount;
+      }
+
+      const sharedInfo = expense.sharedWith.find(user => user.userId.toString() === userId.toString()&&user.userId.toString()!==userId.toString());
+
+      if (sharedInfo) {
+        totalOwed += sharedInfo.amountOwed;
+      }
+      return {
+        expenseId: expense._id,
+        amount: expense.amount,
+        method: expense.method,
+        createdAt: expense.createdAt,
+        createdBy: expense.createdBy.toString(),
+        totalOwed: sharedInfo ? sharedInfo.amountOwed : 0,
+        totalSpent: expense.createdBy.toString() === userId.toString() ? expense.amount : 0,
+      };
+    });
+
+    const userSummary = {
+      userId,
+      totalSpent,
+      totalOwed,
+      netBalance: totalSpent - totalOwed, 
+    };
+
+    const fields = ['expenseId', 'amount', 'method', 'createdAt', 'totalSpent', 'totalOwed'];
+    const opts = { fields };
+    const parser = new Parser(opts);
+    const csv = parser.parse(balanceSheet);
+
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=balance_sheet.csv');
+
+    res.status(200).send(csv);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to download the balance sheet',
+      error: error.message,
+    });
+  }
+};
+
+
+
+
 module.exports = {
   createExpense,
   getexpensezes,
   getexpenseDetails,
   editExpense,
   deleteExpense,
+  downloadBalanceSheet
 };

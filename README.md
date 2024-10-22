@@ -71,6 +71,7 @@ A simple expense sharing application built with Node.js, Express, and MongoDB, i
 - **GET** `/api/expenses/:id` - Get details of an expense
 - **PUT** `/api/expenses/:id` - Update an existing expense
 - **DELETE** `/api/expenses/:id` - Delete an expense
+- **GET** `/api/expense/balanced-sheet/download` -Download balanced Sheet
 
 ### Example Request Body for Creating an Expense
 
