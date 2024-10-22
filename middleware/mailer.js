@@ -28,7 +28,7 @@ const mail=async (req,res,next)=>{
            }
         });
         const data={
-          from: 'sahayak@aicte.com',  
+          from: 'info@splitwise.com',  
           to:emailId,
           subject: "Verify your email",  
           text:`Here is your four digit OTP for login ${otp} . Do not share it with anyone, if this is not you contact support.` 
@@ -41,7 +41,8 @@ const mail=async (req,res,next)=>{
         throw err;
       }
   }
- await send()
+  console.log(otp)
+//  await send()
     
       const token=jwt.sign({email:emailId.toLowerCase()},process.env.secretkey,{expiresIn:"1d"});
       const otp2=await bcrypt.hash(otp,12);

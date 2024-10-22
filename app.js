@@ -25,7 +25,7 @@ mongoose
 
 
 app.use('/api/users', authRoutes);
-app.use('/api', expenseRoutes);
+app.use('/api/expense', expenseRoutes);
 
 app.use("/", (req, res) => {
   res.json({ msg: "success" });

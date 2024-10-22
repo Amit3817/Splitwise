@@ -1,10 +1,11 @@
 const Expense = require("../model/expense.js");
 const User=require("../model/user.js")
 const mongoose=require('mongoose');
+const { unsubscribe } = require("../routes/expenseRoutes.js");
 
 const createExpense = async (req, res) => {
   try {
-  const { amount, sharedWith, method, createdBy } = req.body;
+  const { amount, sharedWith, method } = req.body;
   const user = req.user;
 
     for (const friend of sharedWith) {
@@ -12,10 +13,6 @@ const createExpense = async (req, res) => {
       
       if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({ message: `Invalid userId format for user ${userId}` });
-      }
-
-      if (userId.toString() === user._id.toString()) {
-        return res.status(400).json({ message: `You cannot share an expense with yourself.` });
       }
 
       const friendExists = await User.findById(userId);
@@ -47,7 +44,7 @@ const createExpense = async (req, res) => {
       return res.status(400).json({ message: 'Invalid split method.' });
     }
 
-    const newExpense = await Expense.create({ amount, sharedWith, method, createdBy });
+    const newExpense = await Expense.create({ amount, sharedWith, method, createdBy:user._id });
 
     for (const friend of sharedWith) {
       const { userId: friendId, amountOwed: friendAmount } = friend;
@@ -61,8 +58,9 @@ const createExpense = async (req, res) => {
       } else {
         friendUser.friends.push({ userId: user._id, amount: -friendAmount });
       }
+      friendUser.expenses=newExpense._id;
       await friendUser.save();
-
+      
       const friendIndex = user.friends.findIndex(f => f.userId.equals(friendId));
       if (friendIndex > -1) {
         user.friends[friendIndex].amount += friendAmount;
@@ -70,7 +68,7 @@ const createExpense = async (req, res) => {
         user.friends.push({ userId: friendId, amount: friendAmount });
       }
     }
-
+    user.expenses=newExpense._id;
     await user.save();
 
     res.status(201).json(newExpense);
@@ -109,10 +107,13 @@ const getexpenseDetails = async (req, res, next) => {
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
     }
+    console.log(expense)
+    console.log(expense.createdBy.toString())
     const isCreator = expense.createdBy.toString() === req.user._id.toString();
     const isSharedWith = expense.sharedWith.some(friend =>
       friend.userId.toString() === req.user._id.toString()
     );
+    console.log(1)
 
     if (!isCreator && !isSharedWith) {
       return res.status(403).json({ message: "Access denied" });
@@ -194,13 +195,13 @@ const editExpense = async (req, res, next) => {
 const deleteExpense = async (req, res, next) => {
   try {
     const expenseId = req.params.id;
-    const expense = await expense.findById(req.params.id);
+    const expense = await Expense.findById(req.params.id);
     if (!expense) return res.status(404).json({ message: "expense not found" });
 
     if (!expense.createdBy.equals(new mongoose.Types.ObjectId(req.user._id))) {
       return res.status(403).json({ message: "Unauthorized User" });
     }
-    const expensedel = await expense.findByIdAndDelete(expenseId);
+    const expensedel = await Expense.findByIdAndDelete(expenseId);
     
     if (!expensedel) {
       return res.status(404).json({

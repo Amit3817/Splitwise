@@ -21,9 +21,8 @@ router.post(
     body('sharedWith').isArray().withMessage('sharedWith must be an array').notEmpty().withMessage('sharedWith is required'),
     body('sharedWith.*.userId').isString().withMessage('User ID must be a string').notEmpty().withMessage('User ID is required'),
     body('sharedWith.*.amountOwed').isNumeric().withMessage('Amount owed must be a number').notEmpty().withMessage('Amount owed is required'),
-    body('sharedWith.*.percentage').isNumeric().withMessage('Percentage must be a number').notEmpty().withMessage('Percentage is required'),
-    body('method').isString().withMessage('Method must be a string').notEmpty().withMessage('Method is required'),
-    body('createdBy').isString().withMessage('Creator ID must be a string').notEmpty().withMessage('Creator ID is required'),
+    body('sharedWith.*.percentage').optional().isNumeric().withMessage('Percentage must be a number'),
+    body('method').isString().withMessage('Method must be a string').notEmpty().withMessage('Method is required')
   ],
   validation,
   createExpense
@@ -40,9 +39,8 @@ router.put(
     body('sharedWith').isArray().withMessage('sharedWith must be an array').notEmpty().withMessage('sharedWith is required'),
     body('sharedWith.*.userId').isString().withMessage('User ID must be a string').notEmpty().withMessage('User ID is required'),
     body('sharedWith.*.amountOwed').isNumeric().withMessage('Amount owed must be a number').notEmpty().withMessage('Amount owed is required'),
-    body('sharedWith.*.percentage').isNumeric().withMessage('Percentage must be a number').notEmpty().withMessage('Percentage is required'),
+    body('sharedWith.*.percentage').optional().isNumeric().withMessage('Percentage must be a number'),
     body('method').isString().withMessage('Method must be a string').notEmpty().withMessage('Method is required'),
-    body('createdBy').isString().withMessage('Creator ID must be a string').notEmpty().withMessage('Creator ID is required'),
   ],
   validation,
   editExpense
