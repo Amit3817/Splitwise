@@ -1,7 +1,7 @@
 const express = require("express");
 const { body } = require("express-validator");
 const verifytoken = require("../middleware/isauth.js");
-const validation=require("../middleware/validation")
+const validation = require("../middleware/validation");
 const mail = require("../middleware/mailer.js");
 const {
   signUp,
@@ -13,57 +13,67 @@ const {
 
 const router = express.Router();
 
-router.post('/signup', [
-  body('email', 'Please enter a valid email')
-    .normalizeEmail()
-    .isEmail()
-    .not()
-    .isEmpty(),
-  body('password', 'Please enter a valid password')
-    .trim()
-    .isLength({ min: 8 }),
-  body('name', 'Please enter a valid name')
-    .trim()
-    .isLength({ min: 2 }),
-], validation,signUp, mail);
+router.post(
+  "/signup",
+  [
+    body("email", "Please enter a valid email")
+      .normalizeEmail()
+      .isEmail()
+      .not()
+      .isEmpty(),
+    body("password", "Please enter a valid password")
+      .trim()
+      .isLength({ min: 8 }),
+    body("name", "Please enter a valid name").trim().isLength({ min: 2 }),
+  ],
+  validation,
+  signUp,
+  mail
+);
 
-router.post('/login', [
-  body('email', 'Please enter a valid email')
-    .normalizeEmail()
-    .isEmail()
-    .not()
-    .isEmpty(),
-  body('password', 'Please enter a valid password')
-    .trim()
-    .not()
-    .isEmpty(),
-],validation, logIn);
+router.post(
+  "/login",
+  [
+    body("email", "Please enter a valid email")
+      .normalizeEmail()
+      .isEmail()
+      .not()
+      .isEmpty(),
+    body("password", "Please enter a valid password").trim().not().isEmpty(),
+  ],
+  validation,
+  logIn
+);
 
-
-
-router.post('/forgot-password', [
-  body('email', 'Please enter a valid email')
-  .normalizeEmail()
-  .not()
-  .isEmpty(),
-], validation,forgotPassword, mail);
+router.post(
+  "/forgot-password",
+  [
+    body("email", "Please enter a valid email")
+      .normalizeEmail()
+      .not()
+      .isEmpty(),
+  ],
+  validation,
+  forgotPassword,
+  mail
+);
 
 router.use(verifytoken);
 
+router.post(
+  "/verify-otp",
+  [body("otp", "Please enter a valid OTP").not().isEmpty()],
+  validation,
+  otpVerify
+);
 
-router.post('/verify-otp', [
-  body('otp', 'Please enter a valid OTP')
-    .not()
-    .isEmpty(),
-],validation, otpVerify);
+router.put("/resend-otp", mail);
 
-router.put('/resend-otp', mail);
-
-router.put('/change-password', [
-  body('newPassword', 'Please enter a valid password')
-    .not()
-    .isEmpty(),
-],validation,changePassword);
-
+router.put(
+  "/change-password",
+  [body("newPassword", "Please enter a valid password").not().isEmpty()],
+  validation,
+  changePassword
+);
 
 module.exports = router;

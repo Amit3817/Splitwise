@@ -2,7 +2,7 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
-const expenseRoutes = require('./routes/expenseRoutes');
+const expenseRoutes = require("./routes/expenseRoutes");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -16,16 +16,18 @@ mongoose
   .connect(process.env.dburl)
   .then((result) => {
     app.listen(process.env.PORT, () => {
-      console.log("Connected to database and server is running on port", process.env.PORT);
+      console.log(
+        "Connected to database and server is running on port",
+        process.env.PORT
+      );
     });
   })
   .catch((err) => {
     console.log("Database connection error:", err);
   });
 
-
-app.use('/api/users', authRoutes);
-app.use('/api/expense', expenseRoutes);
+app.use("/api/users", authRoutes);
+app.use("/api/expense", expenseRoutes);
 
 app.use("/", (req, res) => {
   res.json({ msg: "success" });

@@ -11,5 +11,4 @@ const globalValidationMiddleware = (req, res, next) => {
   next();
 };
 
-
 module.exports = globalValidationMiddleware;

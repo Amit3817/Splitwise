@@ -23,12 +23,10 @@ const userschema = new schema({
   ],
   friends: [
     {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    amount:{ type: Number,
-        default:0
-    }
-    }
-],
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      amount: { type: Number, default: 0 },
+    },
+  ],
   otp: {
     type: String,
   },
