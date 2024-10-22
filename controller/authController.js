@@ -9,7 +9,7 @@ function checkPassword(str) {
 
 const signUp = async (req, res, next) => {
   try {
-    const { email, password, name, type } = req.body;
+    const { email, password, name } = req.body;
     const old = await User.findOne({ email: email.toLowerCase() });
     if(old&&old.emailverify) 
       {
@@ -121,7 +121,6 @@ const changePassword = async (req, res, next) => {
       });
     }
     const encpassword = await bcrypt.hash(newpassword, 12);
-    const user = await User.findOne({ email: req.user.email });
     const updated = await User.updateOne(
       { email: req.user.email },
       {

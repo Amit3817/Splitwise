@@ -2,7 +2,7 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
-const quizRoutes = require('./routes/quizRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -25,7 +25,7 @@ mongoose
 
 
 app.use('/api/users', authRoutes);
-app.use('/api', quizRoutes);
+app.use('/api', expenseRoutes);
 
 app.use("/", (req, res) => {
   res.json({ msg: "success" });
