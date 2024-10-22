@@ -129,6 +129,3 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-controller/expenseController.js
-model/expense.js
-routes/quizRoutes.js

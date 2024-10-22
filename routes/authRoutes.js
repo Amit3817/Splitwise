@@ -39,26 +39,31 @@ router.post('/login', [
     .isEmpty(),
 ],validation, logIn);
 
+
+
 router.post('/forgot-password', [
   body('email', 'Please enter a valid email')
-    .normalizeEmail()
-    .not()
-    .isEmpty(),
+  .normalizeEmail()
+  .not()
+  .isEmpty(),
 ], validation,forgotPassword, mail);
+
+router.use(verifytoken);
+
 
 router.post('/verify-otp', [
   body('otp', 'Please enter a valid OTP')
     .not()
     .isEmpty(),
-],validation, verifytoken, otpVerify);
+],validation, otpVerify);
 
-router.put('/resend-otp', verifytoken, mail);
+router.put('/resend-otp', mail);
 
 router.put('/change-password', [
   body('newPassword', 'Please enter a valid password')
     .not()
     .isEmpty(),
-],validation, verifytoken, changePassword);
+],validation,changePassword);
 
 
 module.exports = router;

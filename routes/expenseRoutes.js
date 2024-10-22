@@ -1,4 +1,3 @@
-// routes/expenseRoutes.js
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const {
@@ -7,11 +6,14 @@ const {
   getexpenseDetails,
   editExpense,
   deleteExpense,
-} = require('../controllers/expenseController');
+} = require('../controller/expenseController');
+
+const verifytoken = require("../middleware/isauth.js");
+const validation=require("../middleware/validation");
 
 const router = express.Router();
+router.use(verifytoken);
 
-// Create expense
 router.post(
   '/',
   [
@@ -23,23 +25,14 @@ router.post(
     body('method').isString().withMessage('Method must be a string').notEmpty().withMessage('Method is required'),
     body('createdBy').isString().withMessage('Creator ID must be a string').notEmpty().withMessage('Creator ID is required'),
   ],
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
+  validation,
   createExpense
 );
 
-// Get all expenses
 router.get('/', getexpensezes);
 
-// Get expense details
 router.get('/:id', getexpenseDetails);
 
-// Edit expense
 router.put(
   '/:id',
   [
@@ -51,13 +44,7 @@ router.put(
     body('method').isString().withMessage('Method must be a string').notEmpty().withMessage('Method is required'),
     body('createdBy').isString().withMessage('Creator ID must be a string').notEmpty().withMessage('Creator ID is required'),
   ],
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
+  validation,
   editExpense
 );
 
